@@ -22,7 +22,7 @@ export const AboutBox = () => {
               <button class={styles.closeDialogButton} onClick={closeDialog}>
                 X
               </button>
-              <h1>About Triangle Box</h1>
+              <h1>About Curve Box</h1>
             </div>
           </div>
         </Portal>

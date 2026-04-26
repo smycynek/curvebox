@@ -1,12 +1,12 @@
 {
-  "name": "Triangle Box",
+  "name": "Curve Box",
   "version": "0.0.0",
   "description": "",
   "type": "module",
   "scripts": {
     "start": "vite",
     "dev": "vite",
-    "build": "vite build --base=/trianglebox/",
+    "build": "vite build --base=/curvebox/",
     "serve": "vite preview",
     "lint": "eslint ./src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,css,md}\""

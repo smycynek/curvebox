@@ -1,10 +1,10 @@
-## Triangle Box
+## Curve Box
 
 Copyright 2026 Steven Mycynek
 
 version: 000111
 
-# A simple triangle splitting app
+# A simple curve app
 
 ## Installation
 
@@ -33,4 +33,4 @@ along with a basic knowledge of bash and modern web deployment.
 
 # Live demo
 
-https://stevenvictor.net/trianglebox
+https://stevenvictor.net/curvebox

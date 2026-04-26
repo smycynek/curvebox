@@ -139,6 +139,6 @@ vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 
 sitevars.sh
-trianglebox.zip
-trianglebox/
+curvebox.zip
+curvebox/
 dist/

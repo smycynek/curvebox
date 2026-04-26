@@ -3,7 +3,7 @@
   "configVersion": 0,
   "workspaces": {
     "": {
-      "name": "Triangle Box",
+      "name": "Curve Box",
       "dependencies": {
         "@corvu/dialog": "^0.2.4",
         "@tensorflow/tfjs": "^4.22.0",
