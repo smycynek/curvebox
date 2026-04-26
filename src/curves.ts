@@ -32,6 +32,13 @@ export function anyCubic(c3: number, c2: number, c1: number, c0: number) {
   return cubicFunc;
 }
 
+export function anyCircle(radius: number) {
+  const circleFunc = (t: number): Point => {
+    return new Point(radius * Math.cos(t), radius * Math.sin(t));
+  };
+  return circleFunc;
+}
+
 export function anyPolynomial(...coefficients: number[]) {
   const polyFunc = (t: number): Point => {
     let y = 0;

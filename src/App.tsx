@@ -4,7 +4,15 @@ import { Point } from './Point';
 import { Color } from './color';
 import { AboutBox } from './AboutBox';
 import { Logger, LoggerLevel } from './Logger';
-import { anyPolynomial } from './curves';
+import { anyCircle, anyPolynomial, circle } from './curves';
+
+interface DrawConfig {
+  color: Color;
+  scale: number;
+  offset: Point;
+  canvas: HTMLCanvasElement;
+}
+
 
 const App: Component = () => {
   let canvas: HTMLCanvasElement;
@@ -33,6 +41,15 @@ const App: Component = () => {
     setHeight(canvas.height);
   };
 
+  const getDrawConfig = (color: Color): DrawConfig => {
+    return {
+      color: color,
+      canvas: canvas,
+      scale: 20,
+      offset: new Point(0, 0)
+    };
+  };
+
   // 50px spaced grid point for reference
   const drawGrid = () => {
     for (let idx = 50; idx < canvas.width; idx += 50) {
@@ -40,27 +57,31 @@ const App: Component = () => {
         drawGridPoint(idx, idy);
       }
     }
-    drawCurveAsSegments(canvas, 0, 5, Color.blue, anyPolynomial(1, 0, 0, 0), 10, new Point(0, 0));
-    drawCurveAsSegments(canvas, 0, 5, Color.red, anyPolynomial(-1, 0, 0, 0), 10, new Point(0, 0));
-    drawCurveAsSegments(canvas, 0, 5, Color.orange, anyPolynomial(0.1, 0, 0), 10, new Point(0, 0));
-    drawCurveAsSegments(canvas, 0, 5, Color.black, anyPolynomial(2, 0), 10, new Point(0, 0));
+  };
+
+  const drawCurves = () => {
+    drawCurveAsSegments( 0, 1,  anyPolynomial(1, 0, 0, 0), getDrawConfig(Color.red));
+    drawCurveAsSegments( 1, 2,  anyPolynomial(1, 0, 0), getDrawConfig(Color.blue));
+    drawCurveAsSegments( 0, 4,  anyPolynomial(-1, 0, 0), getDrawConfig(Color.darkgreen));
+    drawCurveAsSegments( -4, 0,  anyPolynomial(-1, 2, -1, 0), getDrawConfig(Color.purple));
+    drawCurveAsSegments( 0, Math.PI, anyCircle(3), getDrawConfig(Color.black));
   };
 
   const drawCurveAsSegments = (
-    canvas: HTMLCanvasElement,
     start: number,
     end: number,
-    color: Color,
     func: (n: number) => Point,
-    scale: number,
-    offset: Point = new Point(0, 0)
+    config: DrawConfig
+
   ): [Point, Point] => {
     const points: Point[] = [];
 
     for (let idx = start; idx <= end; idx += 0.1) {
       points.push(func(idx));
     }
-    drawCurvePointCartSegments(canvas, points, scale, color, offset);
+    points.push(func(end));
+
+    drawCurvePointCartSegments(points, config);
     return [points[0], points[points.length - 1]] as [Point, Point];
   };
 
@@ -88,35 +109,20 @@ const App: Component = () => {
     canvas = document.getElementById('main-canvas')! as HTMLCanvasElement;
     resizeCanvas();
     drawGrid();
+    drawCurves();
   };
 
   const drawGridPoint = (x: number, y: number) => {
     drawPoint(x, y, Color.black, 0.75);
   };
 
-  const drawCurvePointCart = (
-    c: HTMLCanvasElement,
-    p: Point,
-    scale: number,
-    offset: Point = new Point(0, 0)
-  ) => {
-    drawPoint(
-      (p.x + offset.x) * scale + c.width / 2 + offset.x,
-      (-p.y - offset.y) * scale + c.height / 2 + offset.y,
-      Color.blue,
-      3
-    );
-  };
 
   const drawCurvePointCartSegments = (
-    c: HTMLCanvasElement,
     points: Point[],
-    scale: number,
-    color: Color,
-    offset: Point = new Point(0, 0)
+    config: DrawConfig
   ) => {
     for (let i = 0; i < points.length - 1; i++) {
-      drawLine(c, points[i], points[i + 1], color, scale, offset);
+      drawLine(points[i], points[i + 1], config);
     }
   };
 
@@ -139,26 +145,23 @@ const App: Component = () => {
   };
 
   const drawLine = (
-    c: HTMLCanvasElement,
     p1: Point,
     p2: Point,
-    color: Color,
-    scale: number,
-    offset: Point = new Point(0, 0)
+    config: DrawConfig
   ) => {
     if (!canvas) {
       init();
     }
-    context.strokeStyle = color;
-    context.lineWidth = 1.5;
+    context.strokeStyle = config.color;
+    context.lineWidth = 3;
     context.beginPath();
     context.moveTo(
-      (p1.x + offset.x) * scale + c.width / 2 + offset.x,
-      (-p1.y - offset.y) * scale + c.height / 2 + offset.y
+      (p1.x + config.offset.x) * config.scale + config.canvas.width / 2 + config.offset.x,
+      (-p1.y - config.offset.y) * config.scale + config.canvas.height / 2 + config.offset.y
     );
     context.lineTo(
-      (p2.x + offset.x) * scale + c.width / 2 + offset.x,
-      (-p2.y - offset.y) * scale + c.height / 2 + offset.y
+      (p2.x + config.offset.x) * config.scale + config.canvas.width / 2 + config.offset.x,
+      (-p2.y - config.offset.y) * config.scale + config.canvas.height / 2 + config.offset.y
     );
     context.stroke();
   };
@@ -177,7 +180,6 @@ const App: Component = () => {
         <h1 title="Toggle Log" onClick={[toggleLog, null]}>
           Curve Box
         </h1>
-        <h2>Hours of Fun*</h2>
         <p>Simple curve and spline plotting</p>
       </header>
       <header class={styles.header}>
@@ -192,9 +194,6 @@ const App: Component = () => {
 
       <hr />
 
-      <div>
-        <AboutBox></AboutBox>
-      </div>
     </div>
   );
 };
