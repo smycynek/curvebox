@@ -1,7 +1,5 @@
 /* eslint-disable @typescript-eslint/no-extraneous-class */
 
-import * as tf from '@tensorflow/tfjs';
-
 /*
 I didn't feel like installing a logging package, so this is fine for now.
 */
@@ -15,22 +13,22 @@ export class Logger {
   private constructor() {}
   public static loggerLevel: LoggerLevel = LoggerLevel.Info;
 
-  static warn(prefix: string, data?: string | tf.Tensor | tf.Tensor2D) {
+  static warn(prefix: string, data?: string) {
     Logger.implementation(prefix, LoggerLevel.Info, data);
   }
 
-  static info(prefix: string, data?: string | tf.Tensor | tf.Tensor2D) {
+  static info(prefix: string, data?: string) {
     Logger.implementation(prefix, LoggerLevel.Info, data);
   }
 
-  static trace(prefix: string, data?: string | tf.Tensor | tf.Tensor2D) {
+  static trace(prefix: string, data?: string) {
     Logger.implementation(prefix, LoggerLevel.Trace, data);
   }
 
   static implementation(
     prefix: string,
     level: LoggerLevel,
-    data?: string | tf.Tensor | tf.Tensor2D
+    data?: string
   ) {
     if (Logger.loggerLevel === LoggerLevel.None) {
       return;
@@ -39,15 +37,7 @@ export class Logger {
       return;
     }
     const logType = LoggerLevel[level].toString();
-    if (data instanceof tf.tensor2d) {
-      console.log(`${logType} - ${prefix}`);
-      data.print();
-    } else if (data instanceof tf.Tensor) {
-      console.log(`${logType} - ${prefix}`);
-      data.print();
-    } else {
-      console.log(`${logType} - ${prefix} ${data ?? ''}`);
-    }
+    console.log(`${logType} - ${prefix} ${data ?? ''}`);
     console.log('---');
   }
 }

@@ -30,8 +30,6 @@
   },
   "dependencies": {
     "@corvu/dialog": "^0.2.4",
-    "@tensorflow/tfjs": "^4.22.0",
-    "@tensorflow/tfjs-backend-webgpu": "^4.22.0",
     "install": "^0.13.0",
     "solid-js": "^1.9.5"
   }
