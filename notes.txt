@@ -1,0 +1,22 @@
+param y = x^2
+
+[2,5] t
+
+or from 0-1, 2 + 3u) t
+
+natural param [0 to arc length] s
+
+reparametrize
+
+from y = x^2 from 2 to 5. (4 to 25)
+
+0-1 -> 2 + 3u
+
+(2 + 3u)^2 =
+
+4 +12u + 9u^2
+
+0-1 = 4 to 25
+
+calculate arc length
+

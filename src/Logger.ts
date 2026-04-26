@@ -25,11 +25,7 @@ export class Logger {
     Logger.implementation(prefix, LoggerLevel.Trace, data);
   }
 
-  static implementation(
-    prefix: string,
-    level: LoggerLevel,
-    data?: string
-  ) {
+  static implementation(prefix: string, level: LoggerLevel, data?: string) {
     if (Logger.loggerLevel === LoggerLevel.None) {
       return;
     }

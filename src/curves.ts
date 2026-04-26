@@ -39,13 +39,13 @@ export function anyCircle(radius: number) {
   return circleFunc;
 }
 
-export function anyPolynomial(...coefficients: number[]) {
+export function anyPolynomial(coefficients: number[], reparam: number[] = [0, 1]) {
   const polyFunc = (t: number): Point => {
     let y = 0;
     for (let idx = 0; idx < coefficients.length; idx++) {
       y += coefficients[idx] * Math.pow(t, coefficients.length - idx - 1);
     }
-    return new Point(t, y);
+    return new Point(reparam[0] + t * reparam[1], y);
   };
 
   Logger.info(
@@ -54,3 +54,7 @@ export function anyPolynomial(...coefficients: number[]) {
 
   return polyFunc;
 }
+
+// Given a polynomial def and a param range [a,b], how easy is it without libs to
+// create a u [0,1] reparam? what about a natural/arc length?
+// Do I need to symbolically work out f(g(h)) and store that as a new set of polynomial coefficients? That seems like a nightmare. Maybe I can just do it numerically? Like, sample the curve at a bunch of points, measure the distance along the curve at each point, and then create a new function that maps u to t based on those distances. That way I can get a pretty good approximation of the arc length parameterization without having to do any symbolic math.
