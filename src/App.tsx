@@ -67,19 +67,19 @@ const App: Component = () => {
   };
 
   const drawCurves = () => {
-    const coefficients = [2, -3, -2, 1, 1];
+    const coefficients = [1, -1.5, -1, .5, .5];
     const range: [number, number] = [-1.5, 1.5];
-    const aQuadratic = anyPolynomial(coefficients);
+    const aPoly = anyPolynomial(coefficients);
 
-    drawCurveAsSegments(-1.5, 1.5, aQuadratic, getDrawConfig(Color.blue));
-    const theArcLength = arcLength(aQuadratic, range);
+    drawCurveAsSegments(-1.5, 1.5, aPoly, getDrawConfig(Color.blue));
+    const theArcLength = arcLength(aPoly, range);
     console.log(`Arc length of quadratic from ${range[0]} to ${range[1]} is ${theArcLength}`);
 
-    const aQuadNormal = normalParametrization(aQuadratic, range);
-    drawCurveAsSegments(0, 1, aQuadNormal, getDrawConfig(Color.red));
+    const aPolyNormal = normalParametrization(aPoly, range);
+    drawCurveAsSegments(0, 1, aPolyNormal, getDrawConfig(Color.red));
 
-    const aQuadArcLength = arcLengthParametrization(aQuadratic, range);
-    drawCurveAsSegments(0, theArcLength, aQuadArcLength, getDrawConfig(Color.green));
+    const aPolyArcLength = arcLengthParametrization(aPoly, range);
+    drawCurveAsSegments(0, theArcLength, aPolyArcLength, getDrawConfig(Color.green));
   };
 
   const drawCurveAsSegments = (
