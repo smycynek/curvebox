@@ -2,10 +2,14 @@ import { createSignal, onMount, type Component } from 'solid-js';
 import styles from './App.module.css';
 import { Point } from './Point';
 import { Color } from './color';
-import { AboutBox } from './AboutBox';
 import { Logger, LoggerLevel } from './Logger';
-import { anyCircle, anyPolynomial, circle } from './curves';
-import { getMousePos, getTouchPos, round1, round2 } from './utility';
+import {
+  anyPolynomial,
+  arcLength,
+  arcLengthParametrization,
+  normalParametrization,
+} from './curves';
+import { getMousePos, getTouchPos, round1 } from './utility';
 
 interface DrawConfig {
   color: Color;
@@ -63,25 +67,19 @@ const App: Component = () => {
   };
 
   const drawCurves = () => {
-    //  drawCurveAsSegments( 0, 1,  anyPolynomial(1, 0, 0, 0), getDrawConfig(Color.red));
-    //  drawCurveAsSegments( 1, 2,  anyPolynomial(1, 0, 0), getDrawConfig(Color.blue));
+    const coefficients = [2, -3, -2, 1, 1];
+    const range: [number, number] = [-1.5, 1.5];
+    const aQuadratic = anyPolynomial(coefficients);
 
-    //  drawCurveAsSegments( 0, 4,  anyPolynomial(-1, 0, 0), getDrawConfig(Color.darkgreen));
-    //  drawCurveAsSegments( -4, 0,  anyPolynomial(-1, 2, -1, 0), getDrawConfig(Color.purple));
-    // drawCurveAsSegments( 0, Math.PI, anyCircle(3), getDrawConfig(Color.black));
+    drawCurveAsSegments(-1.5, 1.5, aQuadratic, getDrawConfig(Color.blue));
+    const theArcLength = arcLength(aQuadratic, range);
+    console.log(`Arc length of quadratic from ${range[0]} to ${range[1]} is ${theArcLength}`);
 
-    // drawCurveAsSegments( 0, 4,  anyPolynomial([1, 0, 0]), getDrawConfig(Color.blue));
-    // drawCurveAsSegments( 0, 1,  anyPolynomial([4, 8, 4], [2,2]), getDrawConfig(Color.red));
+    const aQuadNormal = normalParametrization(aQuadratic, range);
+    drawCurveAsSegments(0, 1, aQuadNormal, getDrawConfig(Color.red));
 
-    // drawCurvePointCartSegments([new Point(2,4)], getDrawConfig(Color.purple));
-
-    //  drawCurvePointCartSegments([new Point(0,0), new Point(2,4)], getDrawConfig(Color.orange));
-    //  drawCurvePointCartSegments([new Point(2,4), new Point(4,16)], getDrawConfig(Color.orange));
-
-    drawCurveAsSegments(0, 1, anyPolynomial([0.5, 0, 0]), getDrawConfig(Color.red));
-    drawCurveAsSegments(1, 2, anyPolynomial([0.5, 0, 0, 0]), getDrawConfig(Color.blue));
-    drawCurveAsSegments(2, 2.5, anyPolynomial([0.25, 0, 0, 2]), getDrawConfig(Color.darkgreen));
-    drawCurveAsSegments(2.5, 3, anyPolynomial([0.5, 0, 5.56 / 2]), getDrawConfig(Color.orange));
+    const aQuadArcLength = arcLengthParametrization(aQuadratic, range);
+    drawCurveAsSegments(0, theArcLength, aQuadArcLength, getDrawConfig(Color.green));
   };
 
   const drawCurveAsSegments = (
@@ -98,7 +96,7 @@ const App: Component = () => {
     points.push(func(end));
 
     Logger.info(`Drew curve from ${start} to ${end} with ${points.length} points`);
-    points.forEach((p, idx) => Logger.info(`Point ${idx}: (${p.x}, ${p.y})`));
+    // points.forEach((p, idx) => Logger.info(`Point ${idx}: (${p.x}, ${p.y})`));
 
     drawCurvePointCartSegments(points, config);
     return [points[0], points[points.length - 1]] as [Point, Point];
@@ -186,7 +184,7 @@ const App: Component = () => {
 
     const x = round1((pos.x - canvas.width / 2) / 20);
     const y = round1(-(pos.y - canvas.height / 2) / 20);
-    Logger.info(`Mouse over at (${x}, ${y})`);
+    // Logger.info(`Mouse over at (${x}, ${y})`);
     setPt(`Point: (${x}, ${y})`);
   };
 

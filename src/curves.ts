@@ -9,29 +9,6 @@ export function cosine(t: number): Point {
   return new Point(t, Math.cos(t));
 }
 
-export function quadratic(t: number): Point {
-  return new Point(t, t * t);
-}
-
-export function nquadratic(t: number): Point {
-  return new Point(t, -t * t);
-}
-
-export function cubic(t: number): Point {
-  return new Point(t, t * t * t);
-}
-
-export function circle(t: number): Point {
-  return new Point(Math.cos(t), Math.sin(t));
-}
-
-export function anyCubic(c3: number, c2: number, c1: number, c0: number) {
-  const cubicFunc = (t: number): Point => {
-    return new Point(t, c3 * t * t * t + c2 * t * t + c1 * t + c0);
-  };
-  return cubicFunc;
-}
-
 export function anyCircle(radius: number) {
   const circleFunc = (t: number): Point => {
     return new Point(radius * Math.cos(t), radius * Math.sin(t));
@@ -39,22 +16,65 @@ export function anyCircle(radius: number) {
   return circleFunc;
 }
 
-export function anyPolynomial(coefficients: number[], reparam: number[] = [0, 1]) {
+export function anyPolynomial(coefficients: number[]) {
   const polyFunc = (t: number): Point => {
     let y = 0;
     for (let idx = 0; idx < coefficients.length; idx++) {
-      y += coefficients[idx] * Math.pow(t, coefficients.length - idx - 1);
+      y += coefficients[idx] * Math.pow(t, idx);
     }
-    return new Point(reparam[0] + t * reparam[1], y);
+    return new Point(t, y);
   };
-
   Logger.info(
     `Created polynomial with coefficients ${coefficients} and order ${coefficients.length - 1} `
   );
-
   return polyFunc;
 }
 
-// Given a polynomial def and a param range [a,b], how easy is it without libs to
-// create a u [0,1] reparam? what about a natural/arc length?
-// Do I need to symbolically work out f(g(h)) and store that as a new set of polynomial coefficients? That seems like a nightmare. Maybe I can just do it numerically? Like, sample the curve at a bunch of points, measure the distance along the curve at each point, and then create a new function that maps u to t based on those distances. That way I can get a pretty good approximation of the arc length parameterization without having to do any symbolic math.
+export function speed(func: (t: number) => Point, t: number): number {
+  const s1 = func(t);
+  const s2 = func(t + 0.01);
+  return (s2.y - s1.y) / 0.01;
+}
+
+export function normalParametrization(
+  func: (t: number) => Point,
+  bounds: [number, number]
+): (t: number) => Point {
+  const [a, b] = bounds;
+  const reparamFunc = (t: number): Point => {
+    return func(a + t * (b - a));
+  };
+  return reparamFunc;
+}
+
+export function arcLengthParametrization(
+  func: (t: number) => Point,
+  bounds: [number, number]
+): (t: number) => Point {
+  const arcLengthValue = arcLength(func, bounds);
+  const [a, b] = bounds;
+  const reparamFunc = (t: number): Point => {
+    return func(a + (t * (b - a)) / arcLengthValue);
+  };
+  return reparamFunc;
+}
+
+export function arcLength(
+  func: (t: number) => Point,
+  range: [number, number],
+  numSamples: number = 100
+): number {
+  const step = (range[1] - range[0]) / numSamples;
+  let length = 0;
+  const samples: Point[] = [];
+  for (let i = range[0]; i <= range[1]; i += step) {
+    samples.push(func(i));
+  }
+  samples.push(func(range[1]));
+  for (let i = 1; i < samples.length; i++) {
+    const dx = samples[i].x - samples[i - 1].x;
+    const dy = samples[i].y - samples[i - 1].y;
+    length += Math.sqrt(dx * dx + dy * dy);
+  }
+  return length;
+}
