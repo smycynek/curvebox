@@ -19,14 +19,66 @@ interface DrawConfig {
 }
 
 const App: Component = () => {
+  const range: [number, number] = [-2, 2];
   let canvas: HTMLCanvasElement;
   let context: CanvasRenderingContext2D;
-
+  let aPoly: (t: number) => Point;
+  let aPolyArcLength: (t: number) => Point;
+  let aPolyNormal: (t: number) => Point;
   // Canvas height
   const [height, setHeight] = createSignal(0);
-  const [pt, setPt] = createSignal('');
+  const [uValue, setUValue] = createSignal(0.0);
+  const [sValue, setSValue] = createSignal(0.0);
+  const [tValue, setTValue] = createSignal(0.0);
+  const [sArcLengthValue, setSArcLengthValue] = createSignal(0.0);
+  const [pt, setPt] = createSignal('Waiting for mouse move...');
   // Only called once to give a reasonable sized canvas that is square
   // and a multiple of 50px
+
+  const drawAllEvals = () => {
+    drawCurves();
+    drawPoints();
+  };
+  const drawPoints = () => {
+    const uValRes = aPolyNormal(uValue());
+    const sValRes = aPolyArcLength(sValue());
+    const tValRes = aPoly(tValue());
+
+    drawPoint(
+      canvas.width / 2 + uValRes.x * 20,
+      canvas.height / 2 - uValRes.y * 20,
+      Color.black,
+      4
+    );
+    drawPoint(
+      canvas.width / 2 + sValRes.x * 20,
+      canvas.height / 2 - sValRes.y * 20,
+      Color.black,
+      4
+    );
+    drawPoint(
+      canvas.width / 2 + tValRes.x * 20,
+      canvas.height / 2 - tValRes.y * 20,
+      Color.black,
+      4
+    );
+  };
+
+  const setUValueW = (v: number) => {
+    setUValue(v);
+    drawAllEvals();
+  };
+
+  const setTValueW = (v: number) => {
+    setTValue(v);
+    drawAllEvals();
+  };
+
+  const setSValueW = (v: number) => {
+    setSValue(v);
+    drawAllEvals();
+  };
+
   const resizeCanvas = () => {
     const reducedHeight = window.innerHeight * 0.6;
     const roundedHeight = reducedHeight - (reducedHeight % 50);
@@ -61,28 +113,32 @@ const App: Component = () => {
         drawGridPoint(idx, idy);
       }
     }
-    drawPoint(canvas.width / 2, canvas.height / 2, Color.darkgreen, 5);
-    drawCurvePointCartSegments([new Point(0, 0), new Point(0, 100)], getDrawConfig(Color.black));
-    drawCurvePointCartSegments([new Point(0, 0), new Point(100, 0)], getDrawConfig(Color.black));
+    // drawPoint(canvas.width / 2, canvas.height / 2, Color.black, 3);
+    drawCurvePointCartSegments([new Point(0, -100), new Point(0, 100)], getDrawConfig(Color.black));
+    drawCurvePointCartSegments([new Point(-100, 0), new Point(100, 0)], getDrawConfig(Color.black));
   };
 
   const drawCurves = () => {
-    const coefficients1 = [1, -1.5, -1, .5, .5];
-    const coefficients2 = [3, -1.5, -1, .5, .5];
-    const coefficients3 = [5, -1.5, -1, .5, .5];
+    const ctx = canvas.getContext('2d');
+    ctx?.clearRect(0, 0, canvas.width, canvas.height);
+    drawGrid();
+    const coefficients1 = [-5 * 0.9, -1.5 * 0.9, -1 * 0.9, 0.5 * 0.9, 0.5 * 0.9];
+    const coefficients2 = [-1 * 0.9, -1.5 * 0.9, -1 * 0.9, 0.5 * 0.9, 0.5 * 0.9];
+    const coefficients3 = [3 * 0.9, -1.5 * 0.9, -1 * 0.9, 0.5 * 0.9, 0.5 * 0.9];
 
-    const range: [number, number] = [-1.5, 1.5];
-    const aPoly = anyPolynomial(coefficients1);
+    aPoly = anyPolynomial(coefficients1);
 
-    drawCurveAsSegments(-1.5, 1.5, aPoly, getDrawConfig(Color.blue));
+    drawCurveAsSegments(-2, 2, aPoly, getDrawConfig(Color.blue));
     const theArcLength = arcLength(aPoly, range);
     console.log(`Arc length of curve from ${range[0]} to ${range[1]} is ${theArcLength}`);
 
-    const aPolyNormal = normalParametrization(anyPolynomial(coefficients2), range);
-    drawCurveAsSegments(0, 1,  aPolyNormal, getDrawConfig(Color.red));
+    aPolyNormal = normalParametrization(anyPolynomial(coefficients2), range);
+    drawCurveAsSegments(0, 1, aPolyNormal, getDrawConfig(Color.red));
 
-    const aPolyArcLength = arcLengthParametrization(anyPolynomial(coefficients3), range);
-    drawCurveAsSegments(0, theArcLength, aPolyArcLength, getDrawConfig(Color.green));
+    aPolyArcLength = arcLengthParametrization(anyPolynomial(coefficients3), range);
+    setSArcLengthValue(arcLength(aPoly, range));
+    console.log(sArcLengthValue());
+    drawCurveAsSegments(0, theArcLength, aPolyArcLength, getDrawConfig(Color.darkgreen));
   };
 
   const drawCurveAsSegments = (
@@ -129,7 +185,9 @@ const App: Component = () => {
     canvas = document.getElementById('main-canvas')! as HTMLCanvasElement;
     resizeCanvas();
     drawGrid();
+    setTValue(range[0]);
     drawCurves();
+    drawPoints();
   };
 
   const drawGridPoint = (x: number, y: number) => {
@@ -165,7 +223,7 @@ const App: Component = () => {
       init();
     }
     context.strokeStyle = config.color;
-    context.lineWidth = 3;
+    context.lineWidth = 2;
     context.beginPath();
     context.moveTo(
       (p1.x + config.offset.x) * config.scale + config.canvas.width / 2 + config.offset.x,
@@ -184,11 +242,10 @@ const App: Component = () => {
 
   const mouseOverHandler = (data: MouseEvent) => {
     const pos = getMousePos(canvas, data);
-
     const x = round1((pos.x - canvas.width / 2) / 20);
     const y = round1(-(pos.y - canvas.height / 2) / 20);
     // Logger.info(`Mouse over at (${x}, ${y})`);
-    setPt(`Point: (${x}, ${y})`);
+    // setPt(`Mouse Position: (${x}, ${y})`);
   };
 
   const touchMoveHandler = (data: TouchEvent) => {
@@ -213,7 +270,7 @@ const App: Component = () => {
         <h1 title="Toggle Log" onClick={[toggleLog, null]}>
           Curve Box
         </h1>
-        <p>Simple curve and spline plotting</p>
+        <p>Simple curve and parameter plotting</p>
       </header>
       <header class={styles.header}>
         <canvas
@@ -225,8 +282,57 @@ const App: Component = () => {
         ></canvas>
         <div></div>
       </header>
-      <header class="label">{pt()}</header>
-      <hr />
+
+      <div class="container">
+        <header class="label bold">Arc length parameterization</header>
+        <header class="label">{'s-Param: ' + sValue().toFixed(2)}</header>
+        <header class="label">
+          <input
+            type="range"
+            step="0.01"
+            min="0"
+            max={sArcLengthValue()}
+            class="slider"
+            id="myRange2"
+            value={sValue()}
+            onInput={(e) => setSValueW(+e.currentTarget.value)}
+          />
+        </header>
+      </div>
+
+      <div class="container">
+        <header class="label bold">Normal parameterization</header>
+        <header class="label">{'u-Param: ' + uValue().toFixed(2)}</header>
+        <header class="label">
+          <input
+            type="range"
+            step="0.01"
+            min="0"
+            max="1.00"
+            class="slider"
+            id="myRange1"
+            value={uValue()}
+            onInput={(e) => setUValueW(+e.currentTarget.value)}
+          />
+        </header>
+      </div>
+
+      <div class="container">
+        <header class="label bold">Original bounds parameterization</header>
+        <header class="label">{'t-Param: ' + tValue().toFixed(2)}</header>
+        <header class="label">
+          <input
+            type="range"
+            step="0.01"
+            min={range[0]}
+            max={range[1]}
+            class="slider"
+            id="myRange3"
+            value={tValue()}
+            onInput={(e) => setTValueW(+e.currentTarget.value)}
+          />
+        </header>
+      </div>
     </div>
   );
 };

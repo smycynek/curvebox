@@ -2,7 +2,7 @@
 
 Copyright 2026 Steven Mycynek
 
-version: 000160
+version: 000174
 
 # A simple curve app
 
