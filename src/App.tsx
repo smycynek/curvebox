@@ -10,8 +10,6 @@ import {
   normalParametrization,
   speed,
 } from './curves';
-import { inverse2d } from './vector';
-import { createSpline } from './splines';
 
 interface DrawConfig {
   color: Color;
