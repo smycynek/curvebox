@@ -8,8 +8,10 @@ import {
   arcLength,
   arcLengthParametrization,
   normalParametrization,
+  speed,
 } from './curves';
-import { getMousePos, getTouchPos, round1 } from './utility';
+import { inverse2d } from './vector';
+import { createSpline } from './splines';
 
 interface DrawConfig {
   color: Color;
@@ -30,8 +32,23 @@ const App: Component = () => {
   const [uValue, setUValue] = createSignal(0.0);
   const [sValue, setSValue] = createSignal(0.0);
   const [tValue, setTValue] = createSignal(0.0);
+
+  const [i0Adjusted, setI0Adjusted] = createSignal(1.0);
+  const [i1Adjusted, setI1Adjusted] = createSignal(1.0);
+  const [i2Adjusted, setI2Adjusted] = createSignal(1.0);
+  const [i3Adjusted, setI3Adjusted] = createSignal(1.0);
+  const [i4Adjusted, setI4Adjusted] = createSignal(1.0);
+
   const [sArcLengthValue, setSArcLengthValue] = createSignal(0.0);
-  const [pt, setPt] = createSignal('Waiting for mouse move...');
+
+  const [uEval, setUEval] = createSignal(new Point(0, 0));
+  const [sEval, setSEval] = createSignal(new Point(0, 0));
+  const [tEval, setTEval] = createSignal(new Point(0, 0));
+
+  const [uSpeed, setUSpeed] = createSignal('');
+  const [sSpeed, setSSpeed] = createSignal('');
+  const [tSpeed, setTSpeed] = createSignal('');
+
   // Only called once to give a reasonable sized canvas that is square
   // and a multiple of 50px
 
@@ -43,6 +60,23 @@ const App: Component = () => {
     const uValRes = aPolyNormal(uValue());
     const sValRes = aPolyArcLength(sValue());
     const tValRes = aPoly(tValue());
+
+    setUEval(uValRes);
+    setSEval(sValRes);
+    setTEval(tValRes);
+
+    const uSpeedVal =
+      uValue() < 0.05 || uValue() > 0.99 ? '-' : speed(aPolyNormal, uValue(), 0.25).toFixed(2);
+    const tSpeedVal =
+      tValue() < -1.95 || tValue() > 1.95 ? '-' : speed(aPoly, tValue(), 1).toFixed(2);
+    const sSpeedVal =
+      sValue() < 0.05 || sValue() > 11.4
+        ? '-'
+        : speed(aPolyArcLength, sValue(), 1 / 11.5).toFixed(2);
+
+    setUSpeed(uSpeedVal);
+    setTSpeed(tSpeedVal);
+    setSSpeed(sSpeedVal);
 
     drawPoint(
       canvas.width / 2 + uValRes.x * 20,
@@ -76,6 +110,31 @@ const App: Component = () => {
 
   const setSValueW = (v: number) => {
     setSValue(v);
+    drawAllEvals();
+  };
+
+  const seti0AdjustedW = (v: number) => {
+    setI0Adjusted(v);
+    drawAllEvals();
+  };
+
+  const seti1AdjustedW = (v: number) => {
+    setI1Adjusted(v);
+    drawAllEvals();
+  };
+
+  const seti2AdjustedW = (v: number) => {
+    setI2Adjusted(v);
+    drawAllEvals();
+  };
+
+  const seti3AdjustedW = (v: number) => {
+    setI3Adjusted(v);
+    drawAllEvals();
+  };
+
+  const seti4AdjustedW = (v: number) => {
+    setI4Adjusted(v);
     drawAllEvals();
   };
 
@@ -122,9 +181,27 @@ const App: Component = () => {
     const ctx = canvas.getContext('2d');
     ctx?.clearRect(0, 0, canvas.width, canvas.height);
     drawGrid();
-    const coefficients1 = [-5 * 0.9, -1.5 * 0.9, -1 * 0.9, 0.5 * 0.9, 0.5 * 0.9];
-    const coefficients2 = [-1 * 0.9, -1.5 * 0.9, -1 * 0.9, 0.5 * 0.9, 0.5 * 0.9];
-    const coefficients3 = [3 * 0.9, -1.5 * 0.9, -1 * 0.9, 0.5 * 0.9, 0.5 * 0.9];
+    const coefficients1 = [
+      -5 * 0.9 * i0Adjusted(),
+      -1.5 * 0.9 * i1Adjusted(),
+      -1 * 0.9 * i2Adjusted(),
+      0.5 * 0.9 * i3Adjusted(),
+      0.5 * 0.9 * i4Adjusted(),
+    ];
+    const coefficients2 = [
+      -1 * 0.9 * i0Adjusted(),
+      -1.5 * 0.9 * i1Adjusted(),
+      -1 * 0.9 * i2Adjusted(),
+      0.5 * 0.9 * i3Adjusted(),
+      0.5 * 0.9 * i4Adjusted(),
+    ];
+    const coefficients3 = [
+      3 * 0.9 * i0Adjusted(),
+      -1.5 * 0.9 * i1Adjusted(),
+      -1 * 0.9 * i2Adjusted(),
+      0.5 * 0.9 * i3Adjusted(),
+      0.5 * 0.9 * i4Adjusted(),
+    ];
 
     aPoly = anyPolynomial(coefficients1);
 
@@ -240,26 +317,6 @@ const App: Component = () => {
     data.preventDefault();
   };
 
-  const mouseOverHandler = (data: MouseEvent) => {
-    const pos = getMousePos(canvas, data);
-    const x = round1((pos.x - canvas.width / 2) / 20);
-    const y = round1(-(pos.y - canvas.height / 2) / 20);
-    // Logger.info(`Mouse over at (${x}, ${y})`);
-    // setPt(`Mouse Position: (${x}, ${y})`);
-  };
-
-  const touchMoveHandler = (data: TouchEvent) => {
-    const touch = data.touches[0];
-    if (touch) {
-      const pos = getTouchPos(canvas, touch);
-
-      const x = round1((pos.x - canvas.width / 2) / 20);
-      const y = round1(-(pos.y - canvas.height / 2) / 20);
-      Logger.info(`Touch move at (${x}, ${y})`);
-      setPt(`Point:(${x}, ${y})`);
-    }
-  };
-
   onMount(() => {
     init();
   });
@@ -270,69 +327,180 @@ const App: Component = () => {
         <h1 title="Toggle Log" onClick={[toggleLog, null]}>
           Curve Box
         </h1>
-        <p>Simple curve and parameter plotting</p>
+        <p>A fidget spinner that also shows curve parameterization, aka Hours of Fun</p>
       </header>
       <header class={styles.header}>
         <canvas
           class={styles.pointCanvas}
-          onMouseMove={mouseOverHandler}
-          onTouchMove={touchMoveHandler}
           onContextMenu={contextMenuHandler}
           id="main-canvas"
         ></canvas>
         <div></div>
       </header>
 
-      <div class="container">
-        <header class="label bold">Arc length parameterization</header>
-        <header class="label">{'s-Param: ' + sValue().toFixed(2)}</header>
-        <header class="label">
-          <input
-            type="range"
-            step="0.01"
-            min="0"
-            max={sArcLengthValue()}
-            class="slider"
-            id="myRange2"
-            value={sValue()}
-            onInput={(e) => setSValueW(+e.currentTarget.value)}
-          />
-        </header>
-      </div>
+      <details>
+        <summary>Parameterization</summary>
 
-      <div class="container">
-        <header class="label bold">Normal parameterization</header>
-        <header class="label">{'u-Param: ' + uValue().toFixed(2)}</header>
-        <header class="label">
-          <input
-            type="range"
-            step="0.01"
-            min="0"
-            max="1.00"
-            class="slider"
-            id="myRange1"
-            value={uValue()}
-            onInput={(e) => setUValueW(+e.currentTarget.value)}
-          />
-        </header>
-      </div>
+        <div class="container">
+          <header class="label bold">Arc length parameterization</header>
+          <header class="label sm">
+            {'s-Param: ' +
+              sValue().toFixed(2) +
+              ', Value: [' +
+              sEval().x.toFixed(2) +
+              ', ' +
+              sEval().y.toFixed(2) +
+              '], Speed: \u{2248} ' +
+              sSpeed()}
+          </header>
+          <header class="label">
+            <input
+              type="range"
+              step="0.01"
+              min="0"
+              max={sArcLengthValue()}
+              class="h-3 bg-neutral-quaternary rounded-full cursor-pointer range-sm"
+              id="myRange2"
+              value={sValue()}
+              onInput={(e) => setSValueW(+e.currentTarget.value)}
+            />
+          </header>
+        </div>
 
-      <div class="container">
-        <header class="label bold">Original bounds parameterization</header>
-        <header class="label">{'t-Param: ' + tValue().toFixed(2)}</header>
-        <header class="label">
-          <input
-            type="range"
-            step="0.01"
-            min={range[0]}
-            max={range[1]}
-            class="slider"
-            id="myRange3"
-            value={tValue()}
-            onInput={(e) => setTValueW(+e.currentTarget.value)}
-          />
-        </header>
-      </div>
+        <div class="container">
+          <header class="label bold">Normal parameterization</header>
+          <header class="label sm">
+            {'u-Param: ' +
+              uValue().toFixed(2) +
+              ', Value: [' +
+              uEval().x.toFixed(2) +
+              ', ' +
+              uEval().y.toFixed(2) +
+              '], Speed: \u{2248} ' +
+              uSpeed()}
+          </header>
+          <header class="label">
+            <input
+              type="range"
+              step="0.01"
+              min="0"
+              max="1.00"
+              class="h-3 bg-neutral-quaternary rounded-full cursor-pointer range-sm"
+              id="myRange1"
+              value={uValue()}
+              onInput={(e) => setUValueW(+e.currentTarget.value)}
+            />
+          </header>
+        </div>
+
+        <div class="container">
+          <header class="label bold">Original bounds parameterization</header>
+          <header class="label sm">
+            {'t-Param: ' +
+              tValue().toFixed(2) +
+              ', Value: [' +
+              tEval().x.toFixed(2) +
+              ', ' +
+              tEval().y.toFixed(2) +
+              '], Speed: \u{2248} ' +
+              tSpeed()}
+          </header>
+          <header class="label">
+            <input
+              class="h-3 bg-neutral-quaternary rounded-full cursor-pointer range-sm"
+              type="range"
+              step="0.01"
+              min={range[0]}
+              max={range[1]}
+              id="myRange3"
+              value={tValue()}
+              onInput={(e) => setTValueW(+e.currentTarget.value)}
+            />
+          </header>
+        </div>
+      </details>
+      <details>
+        <summary>Coefficient scale</summary>
+        <div class="container">
+          <header class="label bold">a0: {i0Adjusted()}</header>
+          <header class="label">
+            <input
+              class="h-3 bg-neutral-quaternary rounded-full cursor-pointer range-sm"
+              type="range"
+              step="0.01"
+              min="0.5"
+              max="1.5"
+              id="myRange3"
+              value={i0Adjusted()}
+              onInput={(e) => seti0AdjustedW(+e.currentTarget.value)}
+            />
+          </header>
+        </div>
+
+        <div class="container">
+          <header class="label bold">a1: {i1Adjusted()}</header>
+          <header class="label">
+            <input
+              class="h-3 bg-neutral-quaternary rounded-full cursor-pointer range-sm"
+              type="range"
+              step="0.01"
+              min="0.5"
+              max="1.5"
+              id="myRange1"
+              value={i1Adjusted()}
+              onInput={(e) => seti1AdjustedW(+e.currentTarget.value)}
+            />
+          </header>
+        </div>
+
+        <div class="container">
+          <header class="label bold">a2: {i2Adjusted()}</header>
+          <header class="label">
+            <input
+              class="h-3 bg-neutral-quaternary rounded-full cursor-pointer range-sm"
+              type="range"
+              step="0.01"
+              min="0.5"
+              max="1.5"
+              id="myRange2"
+              value={i2Adjusted()}
+              onInput={(e) => seti2AdjustedW(+e.currentTarget.value)}
+            />
+          </header>
+        </div>
+
+        <div class="container">
+          <header class="label bold">a3: {i3Adjusted()}</header>
+          <header class="label">
+            <input
+              class="h-3 bg-neutral-quaternary rounded-full cursor-pointer range-sm"
+              type="range"
+              step="0.01"
+              min="0.5"
+              max="1.5"
+              id="myRange3"
+              value={i3Adjusted()}
+              onInput={(e) => seti3AdjustedW(+e.currentTarget.value)}
+            />
+          </header>
+        </div>
+
+        <div class="container">
+          <header class="label bold">a4: {i4Adjusted()}</header>
+          <header class="label">
+            <input
+              class="h-3 bg-neutral-quaternary rounded-full cursor-pointer range-sm"
+              type="range"
+              step="0.01"
+              min="0.5"
+              max="1.5"
+              id="myRange4"
+              value={i4Adjusted()}
+              onInput={(e) => seti4AdjustedW(+e.currentTarget.value)}
+            />
+          </header>
+        </div>
+      </details>
     </div>
   );
 };

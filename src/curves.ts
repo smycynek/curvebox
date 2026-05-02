@@ -30,10 +30,14 @@ export function anyPolynomial(coefficients: number[]) {
   return polyFunc;
 }
 
-export function speed(func: (t: number) => Point, t: number): number {
-  const s1 = func(t);
-  const s2 = func(t + 0.01);
-  return (s2.y - s1.y) / 0.01;
+export function speed(func: (t: number) => Point, t: number, scale: number = 1): number {
+  let tAdjusted = t;
+  if (t <= 0.01) {
+    tAdjusted = t + 0.03;
+  }
+  const s1 = func(tAdjusted);
+  const s2 = func(tAdjusted - 0.001 * scale);
+  return (s2.y - s1.y) / (s2.x - s1.x);
 }
 
 export function normalParametrization(

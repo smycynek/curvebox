@@ -1,3 +1,5 @@
+@import 'tailwindcss';
+
 body {
   margin: 0;
   font-family:
@@ -7,6 +9,9 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+h1 {
+  font-size: large;
+}
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
 }
@@ -15,10 +20,73 @@ code {
   margin-left: 30px;
 }
 .container {
-  margin-top: 20px !important;
-  margin-bottom: 20px !important;
+  margin-top: 5px !important;
+  margin-bottom: 5px !important;
 }
 
 .bold {
   font-weight: bold;
+}
+
+details {
+  margin-left: 20px;
+}
+.sm {
+  font-size: small;
+}
+input[type='range'] {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  margin-top: 7px;
+  margin-bottom: 7px;
+}
+
+input[type='range']::-webkit-slider-runnable-track {
+  background: lightgrey;
+  /* ...my custom edits...*/
+  height: 5px;
+  border-radius: 5px;
+}
+
+input[type='range']::-moz-range-track {
+  background: darkgray;
+  /* ...my custom edits...*/
+  height: 5px;
+  border-radius: 5px;
+}
+
+input[type='range']:hover::-webkit-slider-runnable-track {
+  background: darkgrey;
+  /* ...my custom edits...*/
+  height: 5px;
+  border-radius: 5px;
+}
+
+input[type='range']::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  height: 14px;
+  width: 14px;
+  border-radius: 5px;
+  background: darkblue;
+  margin-top: -6px;
+  /* ...my custom edits... */
+}
+
+input[type='range']::-moz-range-thumb {
+  -webkit-appearance: none;
+  height: 14px;
+  width: 14px;
+  border-radius: 5px;
+  background: blue;
+  margin-top: -6px;
+  /* ...my custom edits... */
+}
+
+input[type='range']:hover::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  height: 14px;
+  width: 14px;
+  border-radius: 7px;
+  background: black;
+  margin-top: -6px;
 }
