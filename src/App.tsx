@@ -326,6 +326,9 @@ const App: Component = () => {
           Curve Box
         </h1>
         <p>A fidget spinner that also shows curve parameterization, aka Hours of Fun</p>
+        <a href="https://github.com/smycynek/curvebox" target="_blank" rel="noopener noreferrer">
+          https://github.com/smycynek/curvebox
+        </a>
       </header>
       <header class={styles.header}>
         <canvas
