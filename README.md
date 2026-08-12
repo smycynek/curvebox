@@ -2,7 +2,7 @@
 
 Copyright 2026 Steven Mycynek
 
-version: 000205
+version: 000206
 
 # A simple app showing of curve paramerizations
 
