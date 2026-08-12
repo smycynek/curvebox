@@ -26,6 +26,7 @@ const App: Component = () => {
   let aPolyArcLength: (t: number) => Point;
   let aPolyNormal: (t: number) => Point;
   // Canvas height
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [height, setHeight] = createSignal(0);
   const [uValue, setUValue] = createSignal(0.0);
   const [sValue, setSValue] = createSignal(0.0);

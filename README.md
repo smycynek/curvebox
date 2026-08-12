@@ -2,7 +2,7 @@
 
 Copyright 2026 Steven Mycynek
 
-version: 000203
+version: 000205
 
 # A simple app showing of curve paramerizations
 
@@ -22,6 +22,7 @@ bun run format
 bun run build
 deploy.sh
 ```
+
 ## Other notes
 
 # Live demo
