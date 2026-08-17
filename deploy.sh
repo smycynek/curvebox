@@ -60,6 +60,8 @@ mv dist "$APP"
 # compress output
 zip -vr "$APP".zip "$APP"
 
+# DEMO_0_1, deploy automations
+
 # copy zip to site
 scp "$APP".zip "$SITE":public_html
 
