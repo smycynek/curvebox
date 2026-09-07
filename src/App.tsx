@@ -225,6 +225,7 @@ const App: Component = () => {
   ): [Point, Point] => {
     const points: Point[] = [];
 
+    // DEMO_1_3, sample_and_plot_curve
     for (let idx = start; idx <= end; idx += 0.01) {
       points.push(func(idx));
     }
@@ -320,6 +321,7 @@ const App: Component = () => {
     init();
   });
 
+  // DEMO_0_2 basic app layout
   return (
     <div>
       <header class={styles.header}>

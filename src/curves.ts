@@ -16,6 +16,7 @@ export function anyCircle(radius: number) {
   return circleFunc;
 }
 
+// DEMO_1_0, parametric rep
 export function anyPolynomial(coefficients: number[]) {
   const polyFunc = (t: number): Point => {
     let y = 0;
@@ -30,6 +31,7 @@ export function anyPolynomial(coefficients: number[]) {
   return polyFunc;
 }
 
+// DEMO_1_2, curve speed
 export function speed(func: (t: number) => Point, t: number, scale: number = 1): number {
   let tAdjusted = t;
   if (t <= 0.01) {
@@ -40,6 +42,7 @@ export function speed(func: (t: number) => Point, t: number, scale: number = 1):
   return (s2.y - s1.y) / (s2.x - s1.x);
 }
 
+// DEMO_1_1, re-parametrize
 export function normalParametrization(
   func: (t: number) => Point,
   bounds: [number, number]
