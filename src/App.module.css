@@ -37,12 +37,19 @@ h2 {
   font-size: large;
 }
 
+a {
+  font-size: small;
+  margin-left: 10px;
+  margin-right: 10px;
+  margin-top: 3px;
+  margin-bottom: 3px;
+}
+
 p,
-a,
 span,
 li,
 ul {
-  font-size: small;
+  font-size: medium;
   margin-left: 10px;
   margin-right: 10px;
   margin-top: 3px;

@@ -7,16 +7,28 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-h1 {
-  font-size: large;
-}
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
 }
 
 .label {
-  margin-left: 30px;
+  font-size: medium;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
+
+.labelx {
+  font-size: medium;
+  display: flex;
+}
+
+.cite {
+  font-family: sans-serif;
+  font-size: small;
+  margin-top: 20px;
+}
+
 .container {
   margin-top: 5px !important;
   margin-bottom: 5px !important;
