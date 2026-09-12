@@ -328,10 +328,8 @@ const App: Component = () => {
         <h1 title="Toggle Log" onClick={[toggleLog, null]}>
           Curve Box
         </h1>
+        <h2>This polynomial rocks!</h2>
         <p>A fidget spinner that also shows curve parameterization, aka Hours of Fun</p>
-        <a href="https://github.com/smycynek/curvebox" target="_blank" rel="noopener noreferrer">
-          https://github.com/smycynek/curvebox
-        </a>
       </header>
       <header class={styles.header}>
         <canvas
@@ -346,8 +344,8 @@ const App: Component = () => {
         <summary>Parameterization</summary>
 
         <div class="container">
-          <header class="label bold">Arc length parameterization</header>
-          <header class="label sm">
+          <header class="labelx bold">Arc length parameterization</header>
+          <header class="labelx sm">
             {'s-Param: ' +
               sValue().toFixed(2) +
               ', Value: [' +
@@ -357,7 +355,7 @@ const App: Component = () => {
               '], Speed: \u{2248} ' +
               sSpeed()}
           </header>
-          <header class="label">
+          <header class="labelx">
             <input
               type="range"
               step="0.01"
@@ -372,8 +370,8 @@ const App: Component = () => {
         </div>
 
         <div class="container">
-          <header class="label bold">Normal parameterization</header>
-          <header class="label sm">
+          <header class="labelx bold">Normal parameterization</header>
+          <header class="labelx sm">
             {'u-Param: ' +
               uValue().toFixed(2) +
               ', Value: [' +
@@ -383,7 +381,7 @@ const App: Component = () => {
               '], Speed: \u{2248} ' +
               uSpeed()}
           </header>
-          <header class="label">
+          <header class="labelx">
             <input
               type="range"
               step="0.01"
@@ -398,8 +396,8 @@ const App: Component = () => {
         </div>
 
         <div class="container">
-          <header class="label bold">Original bounds parameterization</header>
-          <header class="label sm">
+          <header class="labelx bold">Original bounds parameterization</header>
+          <header class="labelx sm">
             {'t-Param: ' +
               tValue().toFixed(2) +
               ', Value: [' +
@@ -409,7 +407,7 @@ const App: Component = () => {
               '], Speed: \u{2248} ' +
               tSpeed()}
           </header>
-          <header class="label">
+          <header class="labelx">
             <input
               class="h-3 bg-neutral-quaternary rounded-full cursor-pointer range-sm"
               type="range"
@@ -426,8 +424,8 @@ const App: Component = () => {
       <details>
         <summary>Coefficient scale</summary>
         <div class="container">
-          <header class="label bold">a0: {i0Adjusted()}</header>
-          <header class="label">
+          <header class="labelx bold">a0: {i0Adjusted()}</header>
+          <header class="labelx">
             <input
               class="h-3 bg-neutral-quaternary rounded-full cursor-pointer range-sm"
               type="range"
@@ -442,8 +440,8 @@ const App: Component = () => {
         </div>
 
         <div class="container">
-          <header class="label bold">a1: {i1Adjusted()}</header>
-          <header class="label">
+          <header class="labelx bold">a1: {i1Adjusted()}</header>
+          <header class="labelx">
             <input
               class="h-3 bg-neutral-quaternary rounded-full cursor-pointer range-sm"
               type="range"
@@ -458,8 +456,8 @@ const App: Component = () => {
         </div>
 
         <div class="container">
-          <header class="label bold">a2: {i2Adjusted()}</header>
-          <header class="label">
+          <header class="labelx bold">a2: {i2Adjusted()}</header>
+          <header class="labelx">
             <input
               class="h-3 bg-neutral-quaternary rounded-full cursor-pointer range-sm"
               type="range"
@@ -474,8 +472,8 @@ const App: Component = () => {
         </div>
 
         <div class="container">
-          <header class="label bold">a3: {i3Adjusted()}</header>
-          <header class="label">
+          <header class="labelx bold">a3: {i3Adjusted()}</header>
+          <header class="labelx">
             <input
               class="h-3 bg-neutral-quaternary rounded-full cursor-pointer range-sm"
               type="range"
@@ -490,8 +488,8 @@ const App: Component = () => {
         </div>
 
         <div class="container">
-          <header class="label bold">a4: {i4Adjusted()}</header>
-          <header class="label">
+          <header class="labelx bold">a4: {i4Adjusted()}</header>
+          <header class="labelx">
             <input
               class="h-3 bg-neutral-quaternary rounded-full cursor-pointer range-sm"
               type="range"
@@ -505,6 +503,12 @@ const App: Component = () => {
           </header>
         </div>
       </details>
+
+      <div class="label cite">
+        <a href="https://github.com/smycynek/curvebox" target="_blank" rel="noopener noreferrer">
+          https://github.com/smycynek/curvebox
+        </a>
+      </div>
     </div>
   );
 };
